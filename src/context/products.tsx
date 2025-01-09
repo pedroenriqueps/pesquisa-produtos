@@ -32,7 +32,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
                 const products = await fetchProducts();
                 setAllProducts(products);
             } catch (error) {
-                console.error("Erro ao carregar os produtos:", error);
+                throw new Error("Erro ao carregar os produtos:");
             } finally {
                 setLoading(false)
             }
@@ -50,7 +50,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
                 return [...prev, ...products.filter((p: FormProductInterface) => !productIds.has(p.id))];
             });
         } catch (error) {
-            console.error("Erro ao adicionar o produto:", error);
+            throw new Error("Erro ao adicionar o produto:");
         }
     };
 

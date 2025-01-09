@@ -78,8 +78,8 @@ export function FormCreateProduct() {
             reset();
             toast.success("Produto adicionado com sucesso.");
         } catch (error) {
-            console.error("Erro ao criar produto:", error);
             toast.error("Houve um erro ao criar produto.");
+            throw new Error("Erro ao criar produto:");
         }
     };
 
