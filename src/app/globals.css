@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.inputs-default-form {
+    @apply w-full outline-none border border-black rounded-md shadow-sm focus:border-2 h-10 pl-2;
+}
