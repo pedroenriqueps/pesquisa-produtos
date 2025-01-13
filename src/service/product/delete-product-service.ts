@@ -2,7 +2,12 @@ import axios from "axios";
 
 export async function deleteProduct(id: number) {
     try {
-        const response = await axios.delete(`/api/product/delete-product/?id=${id}`);
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/product/delete-product`, {
+            params: { id },
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
         return response.data;
     } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response) {

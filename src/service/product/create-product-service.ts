@@ -3,7 +3,11 @@ import { FormProductInterface } from "@/context/products";
 
 export const createProduct = async (data: FormProductInterface) => {
     try {
-        const response = await axios.post("/api/product/create-product", data);
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/product/create-product`, data, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
         return response.data;
     } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response) {
