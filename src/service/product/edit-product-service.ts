@@ -1,11 +1,10 @@
-import { FormProductInterface } from "@/context/products";
 import axios from "axios";
 
-export async function EditProduct(productData: FormProductInterface) {
+export async function editProduct(id: number, data: any) {
     try {
         const response = await axios.put(
-            `${process.env.NEXT_PUBLIC_API_URL}/product/edit-product/${productData.id}`,
-            productData,
+            `${process.env.NEXT_PUBLIC_API_URL}/product/edit-product/${id}`,
+            data,
             {
                 headers: {
                     "Content-Type": "application/json",

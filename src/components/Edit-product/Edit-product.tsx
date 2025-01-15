@@ -1,22 +1,16 @@
-"use client"
+'use client';
+
 import { DeleteButton } from "../Delete-product/Delete-product";
 import { toast } from "react-toastify";
+import { CiEdit } from "react-icons/ci";
 import { ManagementList } from "../Management-list/Management-list";
 import { FormProductInterface, useProductContext } from "@/context/products";
 import { editProduct } from "@/service/product/edit-product-service";
 import { useState } from "react";
-import { EditButton } from "./Edit-button/Edit-button";
-import { FilterInput } from "../Filter-product/Filter-product";
 
 export function EditProduct() {
-    const { allProducts, loading } = useProductContext();
+    const { allProducts, loading, setAllProducts } = useProductContext();
     const [editingProduct, setEditingProduct] = useState<FormProductInterface | null>(null);
-    const [filter, setFilter] = useState("");
-
-
-    const filteredProducts = allProducts.filter((product) =>
-        product.productName.toLowerCase().includes(filter.toLowerCase())
-    );
 
     const handleEditClick = (product: FormProductInterface) => {
         setEditingProduct(product);
@@ -26,9 +20,20 @@ export function EditProduct() {
         if (!editingProduct) return;
 
         try {
-            await editProduct(editingProduct.id!, editingProduct);
+            const updatedProduct = await editProduct(editingProduct.id!, editingProduct);
+
+            setAllProducts((prev) => {
+                const updatedProducts = [...prev];
+                const index = updatedProducts.findIndex(p => p.id === updatedProduct.id);
+                if (index !== -1) {
+                    updatedProducts[index] = updatedProduct;
+                }
+                return updatedProducts;
+            })
+
             toast.success("Produto editado com sucesso!");
             setEditingProduct(null);
+            window.location.reload()
         } catch (error) {
             if (error instanceof Error) {
                 toast.error(`Erro ao editar produto: ${error.message}`);
@@ -45,22 +50,21 @@ export function EditProduct() {
 
     return (
         <section>
-            <div className="p-4">
-                <FilterInput
-                    value={filter}
-                    onChange={setFilter}
-                    placeholder="Digite o nome do produto para filtrar"
-                />
-            </div>
             <ManagementList
                 loading={loading}
-                products={filteredProducts}
+                products={allProducts}
                 renderRest={(product: FormProductInterface) => (
                     <>
                         {product.id !== undefined && (
                             <DeleteButton productId={product.id} />
                         )}
-                        <EditButton onClick={() => handleEditClick(product)} />
+                        <button
+                            type="button"
+                            className="absolute right-1 bottom-1 text-red-600"
+                            onClick={() => handleEditClick(product)}
+                        >
+                            <CiEdit size={24} />
+                        </button>
                     </>
                 )}
             />
@@ -74,7 +78,7 @@ export function EditProduct() {
                                 <label className="block text-sm font-medium text-gray-700">Nome</label>
                                 <input
                                     type="text"
-                                    value={editingProduct.productName}
+                                    value={editingProduct.productName ?? ""}
                                     onChange={(e) =>
                                         handleInputChange("productName", e.target.value)
                                     }
@@ -85,7 +89,7 @@ export function EditProduct() {
                                 <label className="block text-sm font-medium text-gray-700">Valor</label>
                                 <input
                                     type="number"
-                                    value={editingProduct.productValue}
+                                    value={editingProduct.productValue ?? ""}
                                     onChange={(e) =>
                                         handleInputChange("productValue", parseFloat(e.target.value))
                                     }
@@ -98,7 +102,7 @@ export function EditProduct() {
                                 </label>
                                 <input
                                     type="text"
-                                    value={editingProduct.productCode}
+                                    value={editingProduct.productCode ?? ""}
                                     onChange={(e) =>
                                         handleInputChange("productCode", e.target.value)
                                     }
