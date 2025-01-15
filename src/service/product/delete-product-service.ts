@@ -2,8 +2,7 @@ import axios from "axios";
 
 export async function deleteProduct(id: number) {
     try {
-        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/product/delete-product`, {
-            params: { id },
+        const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/product/delete-product/${id}`, {
             headers: {
                 "Content-Type": "application/json",
             },

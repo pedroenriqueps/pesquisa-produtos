@@ -3,8 +3,8 @@ import prisma from "@/infra/lib/prisma";
 
 export async function DELETE(request: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url)
-        const id = searchParams.get("id")
+        const url = new URL(request.url);
+        const id = Number(url.pathname.split('/').pop());
 
         if (!id) {
             return NextResponse.json(
@@ -15,7 +15,7 @@ export async function DELETE(request: NextRequest) {
 
         const deleteProduct = await prisma.product.delete({
             where: {
-                id: parseInt(id)
+                id: id
             }
         })
 
