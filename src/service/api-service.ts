@@ -1,51 +1,53 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const api = axios.create({
-    baseURL: process.env.PUBLIC_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     timeout: 10000,
     headers: {
-        "Content-Type": "application/json"
-    }
-})
+        "Content-Type": "application/json",
+    },
+});
 
 api.interceptors.request.use(
     (config) => {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("token");
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
-        return config
+        return config;
     },
     (error) => {
-        console.error('Erro na requisição:', error);
+        console.error("Erro ao configurar a requisição:", error);
         return Promise.reject(error);
     }
-)
+);
 
 api.interceptors.response.use(
-    (response) => {
-        return response.data;
-    },
+    (response) => response.data,
     (error) => {
-        if (error.response) {
-            console.error('Erro na resposta:', {
-                status: error.response.status,
-                data: error.response.data,
-            })
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+                console.error("Erro na resposta do servidor:", {
+                    status: error.response.status,
+                    data: error.response.data,
+                });
 
-            if (error.response.status === 401) {
-                if (typeof window !== 'undefined') {
-                    window.location.href = '/user/login';
+                if (error.response.status === 401 && typeof window !== "undefined") {
+                    console.error("erro, usuário não autorizado")
                 }
-            }
-            else if (error.request) {
-                console.error('Erro na requisição:', error.request);
+            } else if (error.request) {
+                console.error("Erro na requisição (sem resposta):", error.request);
             } else {
-                console.error('Erro desconhecido:', error.message);
+                console.error("Erro desconhecido:", error.message);
             }
+        } else {
+            console.error("Erro genérico:", error);
         }
-        return Promise.reject(error)
+        return Promise.reject(error);
     }
-)
+);
 
-export { api }
+export default api;
