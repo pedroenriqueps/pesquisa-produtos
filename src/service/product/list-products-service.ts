@@ -1,8 +1,9 @@
 import axios from "axios";
+import api from "@/service/api-service"
 
 export async function fetchProducts() {
     try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/product/list-products`, {
+        const response = await api.get(`/product/list-products`, {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -12,7 +13,9 @@ export async function fetchProducts() {
         if (axios.isAxiosError(error) && error.response) {
             const serverMessage = error.response.data?.message || "Erro desconhecido no servidor.";
             throw new Error(`Erro ao listar produtos: ${serverMessage}`);
+        } else if (error instanceof Error) {
+            throw new Error(`Erro ao listar produtos: ${error.message}`);
         }
-        throw new Error("Erro ao listar produtos. Verifique sua conexão.");
+        throw new Error("Erro inesperado ao listar produtos.");
     }
 }
